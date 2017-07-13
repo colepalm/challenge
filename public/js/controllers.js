@@ -2,36 +2,23 @@
 
 /* Controllers */
 
-angular.module('myApp.controllers', []).
-  controller('AppCtrl', function ($scope, $http) {
-
-    $http({
-      method: 'GET',
-      url: '/api/name'
-    }).
-    success(function (data, status, headers, config) {
-      $scope.name = data.name;
-    }).
-    error(function (data, status, headers, config) {
-      $scope.name = 'Error!';
-    });
-
-  }).
-  controller('MyCtrl1', function ($scope, $http) {
-
+function IndexCtrl($scope, $http) {
     function init() {
-        var feeData, orderData;
 
         $http.get('js/fees.json').success(function (data) {
-            feeData = data;
+            getOrderData(data);
         });
 
-        $http.get('js/orders.json').success(function (data) {
-            orderData = data;
-            feesChallenge(feeData, orderData);
-        });
     }
     init();
+
+    function getOrderData(feeData) {
+
+        $http.get('js/orders.json').success(function (data) {
+            feesChallenge(feeData, data);
+        });
+
+    }
 
     function feesChallenge(feeData, orderData) {
         console.log('Part 1: Fees \n\n');
@@ -130,9 +117,54 @@ angular.module('myApp.controllers', []).
         console.log('\tOrder item ' + orderItem.type + ': $' + total);
         return total;
     }
+}
 
-  }).
-  controller('MyCtrl2', function ($scope) {
-    // write Ctrl here
+function AddPostCtrl($scope, $http, $location) {
+  $scope.form = {};
+  $scope.submitPost = function () {
+    $http.post('/api/post', $scope.form).
+      success(function(data) {
+        $location.path('/');
+      });
+  };
+}
 
-  });
+function ReadPostCtrl($scope, $http, $routeParams) {
+  $http.get('/api/post/' + $routeParams.id).
+    success(function(data) {
+      $scope.post = data.post;
+    });
+}
+
+function EditPostCtrl($scope, $http, $location, $routeParams) {
+  $scope.form = {};
+  $http.get('/api/post/' + $routeParams.id).
+    success(function(data) {
+      $scope.form = data.post;
+    });
+
+  $scope.editPost = function () {
+    $http.put('/api/post/' + $routeParams.id, $scope.form).
+      success(function(data) {
+        $location.url('/readPost/' + $routeParams.id);
+      });
+  };
+}
+
+function DeletePostCtrl($scope, $http, $location, $routeParams) {
+  $http.get('/api/post/' + $routeParams.id).
+    success(function(data) {
+      $scope.post = data.post;
+    });
+
+  $scope.deletePost = function () {
+    $http.delete('/api/post/' + $routeParams.id).
+      success(function(data) {
+        $location.url('/');
+      });
+  };
+
+  $scope.home = function () {
+    $location.url('/');
+  };
+}
