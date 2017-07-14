@@ -73,7 +73,6 @@ exports.prices = function (req, res) {
 
     req.body.forEach(function (order) {
 
-        var length = response.length - 1;
         var total = 0;
         var orderItems = [];
 
