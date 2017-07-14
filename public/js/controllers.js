@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-function IndexCtrl($scope, $http) {
+function IndexCtrl($http) {
     function init() {
         $http.get('js/orders.json').success(function (data) {
             //For API Challenge
